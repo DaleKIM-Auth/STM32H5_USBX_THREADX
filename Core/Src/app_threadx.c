@@ -126,6 +126,8 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
 void tx_app_thread_entry(ULONG thread_input)
 {
   /* USER CODE BEGIN tx_app_thread_entry */
+  TX_THREAD_NOT_USED(thread_input);
+  
   for(;;) {
     tx_thread_sleep(1);
   }
