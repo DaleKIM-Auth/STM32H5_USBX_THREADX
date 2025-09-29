@@ -36,7 +36,7 @@
 #define _STUCK_LIMIT_CNT      3
 
 #define TDM_ACCELO_AXIS       3
-#define TDM_DATA_SIZE         (1024 * TDM_ACCELO_AXIS)
+#define TDM_DATA_SIZE         (2048 * TDM_ACCELO_AXIS)
 
 extern I2C_HandleTypeDef hi2c1;
 /*

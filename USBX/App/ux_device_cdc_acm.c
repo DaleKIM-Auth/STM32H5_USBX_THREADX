@@ -139,12 +139,36 @@ VOID usbx_cdc_acm_write_thread_entry(ULONG thread_input)
   
   UX_PARAMETER_NOT_USED(thread_input);
 
-  device = &_ux_system_slave->ux_system_slave_device;  
+  device = &_ux_system_slave->ux_system_slave_device;
+  ux_device_class_cdc_acm_ioctl(cdc_acm, UX_SLAVE_CLASS_CDC_ACM_IOCTL_SET_WRITE_TIMEOUT, (ULONG *)6);
+  
+  static int timeout = 0;
+  static int duplicate = 0;
+  static int pre_checksum = 0;
   
   while(1) {
     if ((device->ux_slave_device_state == UX_DEVICE_CONFIGURED) && (cdc_acm != UX_NULL)) {
       tx_semaphore_get(&txCDCSemaphore, TX_WAIT_FOREVER);
-      ux_device_class_cdc_acm_write(cdc_acm, (UCHAR *)outBuffer, TDM_DATA_SIZE, &tx_actual_length);
+      
+      
+      //check if duplicated
+      int now_checksum = 0;
+      for(int i=0; i<TDM_DATA_SIZE; i++)
+      {
+        now_checksum = now_checksum + outBuffer[i];
+      }
+      
+      if(now_checksum == pre_checksum)
+      {
+        duplicate++;
+      }
+      
+      pre_checksum = now_checksum;
+      
+      if(ux_device_class_cdc_acm_write(cdc_acm, (UCHAR *)outBuffer, TDM_DATA_SIZE * 2, &tx_actual_length) != UX_SUCCESS)
+      {
+        timeout++;
+      }
     }
   }
 }
